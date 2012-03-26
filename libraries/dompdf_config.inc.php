@@ -285,7 +285,7 @@ def("DOMPDF_ENABLE_JAVASCRIPT", true);
  *
  * @var bool
  */
-def("DOMPDF_ENABLE_REMOTE", TRUE);
+def("DOMPDF_ENABLE_REMOTE", FALSE);
 
 /**
  * The debug output log
@@ -378,7 +378,7 @@ def('DEBUGCSS', false);
  * Visible in the PDF itself.
  */
 def('DEBUG_LAYOUT', false);
-def('DEBUG_LAYOUT_LINES', true);
-def('DEBUG_LAYOUT_BLOCKS', true);
-def('DEBUG_LAYOUT_INLINE', true);
-def('DEBUG_LAYOUT_PADDINGBOX', true);
+def('DEBUG_LAYOUT_LINES', false);
+def('DEBUG_LAYOUT_BLOCKS', false);
+def('DEBUG_LAYOUT_INLINE', false);
+def('DEBUG_LAYOUT_PADDINGBOX', false);
