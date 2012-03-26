@@ -16,6 +16,6 @@ class savepdf_lib {
 		if (!$name) $name = md5(time());
 		$this->dompdf->load_html($html);
 		$this->dompdf->render();
-		$this->dompdf->stream(str_replace(' ', '_', $name));
+		$this->dompdf->stream(str_replace(' ', '_', $name).'.pdf');
 	}
 }

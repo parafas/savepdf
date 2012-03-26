@@ -7,7 +7,6 @@
 			Address: <?php echo site_url($page->uri); ?>
 		<td>
 	</tr>
-	<tr><td colspan="2"><hr></td></tr>
 </table>
 
 <article class="page">

@@ -143,31 +143,7 @@ class Savepdf extends Public_Controller {
 				//Restricted
 				return false;
 			}
-		}
-
-		// Don't worry about breadcrumbs for 404 or restricted
-		elseif (count($url_segments) > 1)
-		{
-			// we dont care about the last one
-			array_pop($url_segments);
-
-
-			// This array of parents in the cache?
-			if ( ! $parents = $this->pyrocache->get('page_m/'.md5(implode('/', $url_segments))))
-			{
-				$parents = $breadcrumb_segments = array();
-
-				foreach ($url_segments as $segment)
-				{
-					$breadcrumb_segments[] = $segment;
-
-					$parents[] = $this->pyrocache->model('page_m', 'get_by_uri', array($breadcrumb_segments));
-				}
-				// Cache for next time
-				$this->pyrocache->write($parents, 'page_m/'.md5(implode('/', $url_segments)));
-			}
-		}
-		
+		}		
 	
 		// No layout
 		$this->template->set_layout('');
@@ -195,6 +171,6 @@ class Savepdf extends Public_Controller {
 			->set('page', $page)
 			->build('page', $this->data, TRUE);
 
-		$this->savepdf_lib->load($page->body, $page->title);
+		$this->savepdf_lib->load($body, $page->title);
 	}
 }
