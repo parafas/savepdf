@@ -8,7 +8,7 @@ class Savepdf extends Public_Controller {
         $this->load->library('savepdf_lib');
 
     }
-	
+
 	/**
 	 * Catch all requests to this page in one mega-function
 	 * @access public
@@ -22,13 +22,13 @@ class Savepdf extends Public_Controller {
 		{
 			$url_segments = $this->uri->total_rsegments() > 0 ? array_slice($this->uri->rsegment_array(), 1) : null;
 		}
-		
+
 		// not routed, so use the actual URI segments
 		else
 		{*/
 			//$url_segments = $this->uri->total_segments() > 1 ? $this->uri->segment_array() : null;
 		//}
-		
+
 		if (isset($_GET['page'])) {
 			$url_segments = explode('/',$_GET['page']);
 			// If it has .rss on the end then parse the RSS feed
@@ -38,7 +38,7 @@ class Savepdf extends Public_Controller {
 		}
 		elseif (isset($_GET['blog'])) {
 			$this->_blog($_GET['blog']);
-			
+
 		}
 	}
 
@@ -52,6 +52,7 @@ class Savepdf extends Public_Controller {
 	public function _blog($slug = '')
 	{
 		$this->load->model('blog/blog_m');
+		$this->load->model('blog/blog_categories_m');
 
 		if ( ! $slug or ! $post = $this->blog_m->get_by('slug', $slug))
 		{
@@ -62,7 +63,7 @@ class Savepdf extends Public_Controller {
 		{
 			redirect('blog');
 		}
-		
+
 		// if it uses markdown then display the parsed version
 		if ($post->type == 'markdown')
 		{
@@ -87,10 +88,10 @@ class Savepdf extends Public_Controller {
 
 		$this->template->title($post->title, lang('blog_blog_title'));
 		$post->url = site_url('blog/'.date('Y', $post->created_on).'/'.date('m', $post->created_on).'/'.$post->slug);
-		
+
 		// No layout
 		$this->template->set_layout('');
-		
+
 		$body = $this->template
 			->set_breadcrumb($post->title)
 			->set('post', $post)
@@ -103,12 +104,12 @@ class Savepdf extends Public_Controller {
 		$this->load->model('pages/page_m');
 
 		$page = $url_segments !== NULL
-		
+
 			// Fetch this page from the database via cache
 			? $this->pyrocache->model('page_m', 'get_by_uri', array($url_segments))
 
 			: $this->pyrocache->model('page_m', 'get_home');
-			
+
 
 		// If page is missing or not live (and not an admin) show 404
 		if ( ! $page OR ($page->status == 'draft' AND ( ! isset($this->current_user->group) OR $this->current_user->group != 'admin')))
@@ -119,7 +120,7 @@ class Savepdf extends Public_Controller {
 				show_error('The page you are trying to view does not exist and it also appears as if the 404 page has been deleted.');
 			}
 		}
-		
+
 		// If this is a homepage, do not show the slug in the URL
 		if ($page->is_home and $url_segments)
 		{
@@ -131,7 +132,7 @@ class Savepdf extends Public_Controller {
 		{
 			return false;
 		}
-		
+
 		// Nope, it's a page but do they have access?
 		elseif ($page->restricted_to)
 		{
@@ -143,8 +144,8 @@ class Savepdf extends Public_Controller {
 				//Restricted
 				return false;
 			}
-		}		
-	
+		}
+
 		// No layout
 		$this->template->set_layout('');
 
@@ -152,7 +153,7 @@ class Savepdf extends Public_Controller {
 		$page->chunks = $this->db->order_by('sort')
 			->get_where('page_chunks', array('page_id' => $page->id))
 			->result();
-		
+
 		$chunk_html = '';
 		foreach ($page->chunks as $chunk)
 		{
@@ -162,8 +163,8 @@ class Savepdf extends Public_Controller {
 						'</div>' .
 					'</div>'.PHP_EOL;
 		}
-		
-		
+
+
 		// Parse it so the content is parsed. We pass along $page so that {{ page:id }} and friends work in page content
 		$page->body = $this->parser->parse_string(str_replace(array('&#39;', '&quot;'), array("'", '"'), $chunk_html), array('theme' => $this->theme, 'page' => $page), TRUE);
 		$body = $this->template
